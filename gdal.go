@@ -3678,28 +3678,17 @@ func GDALCheckVersion(versionMajor, versionMinor int, callingComponentName strin
 	return
 }
 
-// GDALRPCInfoV1 is a deprecated Rational Polynomial Coefficients structure.
-type GDALRPCInfoV1 struct {
-	cValue C.GDALRPCInfoV1
-}
-
 // GDALRPCInfoV2 stores Rational Polynomial Coefficients / Rigorous Projection
 // Model.
 type GDALRPCInfoV2 struct {
 	cValue C.GDALRPCInfoV2
 }
 
-func gdalExtractRPCInfoV1(metadata []string, rpcInfo *GDALRPCInfoV1) (result int) {
-	md, free := cStrings(metadata)
-	defer free()
-	result = int(C.GDALExtractRPCInfoV1(C.CSLConstList(unsafe.Pointer(md)), &rpcInfo.cValue))
-	return
-}
-
-func GDALExtractRPCInfoV1(metadata []string) (rpcInfo GDALRPCInfoV1, ok bool) {
-	ok = gdalExtractRPCInfoV1(metadata, &rpcInfo) != 0
-	return
-}
+// Note: gdal.h also declares the deprecated GDALExtractRPCInfoV1 /
+// GDALRPCInfoV1 pair, but GDAL does not export a GDALExtractRPCInfoV1 symbol to
+// external consumers — the V1 implementation is only reachable through the
+// bare, macro-remapped GDALExtractRPCInfo name. Wrapping it would produce an
+// undefined-symbol link error, so it is intentionally omitted; use V2.
 
 func gdalExtractRPCInfoV2(metadata []string, rpcInfo *GDALRPCInfoV2) (result int) {
 	md, free := cStrings(metadata)
